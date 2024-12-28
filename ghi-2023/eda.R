@@ -1,21 +1,25 @@
 # Exploratory Data Analysis
 
 library(ggplot2)
-library(ggmap)
 library(config)
-library(googleway)
+library(maps)
+library(rworldmap)
+library(sf)
 
+world_map_sf <- st_as_sf(world_map)
 
-# Retrieve api key from secure config file
-api_key <- config::get('gmaps')$api_key
+ghi_23 <- dat[dat$year == 2023, ]
 
-# Register api key
-register_google(key = api_key)
+world_map_sf <- merge(world_map_sf, ghi_23, by.x = 'ISO3', by.y = 'country_code')
 
-map_data <- get_googlemap(center = c(lon = 0, lat = 0), zoom = 2, maptype = "roadmap")
+# need to fix this plot
+# issues with colorfill
+ggplot(data = world_map_sf) +
+  geom_sf(aes(fill = 'life_expect')) +
+  scale_fill_viridis_d(option = 'plasma', na.value = 'grey90') +
+  theme_minimal() +
+  labs(title = 'Map of 2023 Life Expectancies by Countries',  fill = 'Life Expectancy')
 
-
-ggmap(map_data)
 
 
 
